@@ -1,0 +1,82 @@
+name: Career Radar - Trudvsem pilot
+
+on:
+  push:
+    branches:
+      - career-radar/trudvsem-pilot-20261029
+    paths:
+      - 'career-radar/trudvsem/**'
+      - '.github/workflows/career-radar-trudvsem.yml'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Dry run or append to Google Sheets'
+        required: true
+        type: choice
+        default: dry-run
+        options:
+          - dry-run
+          - write-sheet
+  # schedule disabled until full end-to-end test:
+  # schedule:
+  #   - cron: '15 6,18 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: career-radar-trudvsem-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: career-radar/trudvsem
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests
+        run: python -m unittest discover -p 'test_*.py' -v
+      - name: Compile
+        run: python -m py_compile collector.py
+
+  collect:
+    needs: test
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: career-radar/trudvsem
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Google dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Collect and optionally append
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SPREADSHEET_ID: ${{ secrets.GOOGLE_SPREADSHEET_ID }}
+          RUN_MODE: ${{ inputs.mode }}
+        run: |
+          if [ "$RUN_MODE" = "write-sheet" ]; then
+            python collector.py --days 7 --limit 25 --pages 1 --output vacancies.json --summary summary.json --write-sheet
+          else
+            python collector.py --days 7 --limit 25 --pages 1 --output vacancies.json --summary summary.json
+          fi
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: career-radar-trudvsem
+          path: |
+            career-radar/trudvsem/vacancies.json
+            career-radar/trudvsem/summary.json
+          retention-days: 7
