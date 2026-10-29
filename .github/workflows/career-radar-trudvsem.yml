@@ -49,6 +49,31 @@ jobs:
       - name: Compile
         run: python -m py_compile collector.py
 
+  live_probe:
+    needs: test
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    defaults:
+      run:
+        working-directory: career-radar/trudvsem
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Live Trudvsem API probe (no Google writes)
+        run: python collector.py --group "Оператор чата" --days 14 --limit 8 --pages 1 --timeout 45 --output probe_vacancies.json --summary probe_summary.json
+      - name: Upload API probe report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: career-radar-trudvsem-api-probe
+          path: |
+            career-radar/trudvsem/probe_vacancies.json
+            career-radar/trudvsem/probe_summary.json
+          retention-days: 7
+
   collect:
     needs: test
     if: github.event_name == 'workflow_dispatch'
