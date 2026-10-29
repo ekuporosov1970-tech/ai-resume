@@ -7,6 +7,10 @@ on:
     paths:
       - 'career-radar/trudvsem/**'
       - '.github/workflows/career-radar-trudvsem.yml'
+  pull_request:
+    paths:
+      - 'career-radar/trudvsem/**'
+      - '.github/workflows/career-radar-trudvsem.yml'
   workflow_dispatch:
     inputs:
       mode:
