@@ -113,6 +113,8 @@ def experience_text(v: dict) -> str:
 
 def salary_text(v: dict) -> str:
     low, high = clean(v.get("salary_min"), 30), clean(v.get("salary_max"), 30)
+    low = "" if low in ("0", "0.0") else low
+    high = "" if high in ("0", "0.0") else high
     salary = clean(v.get("salary"), 60)
     if low and high:
         return (low + " ₽" if low == high else low + "–" + high + " ₽")
@@ -246,6 +248,10 @@ def fetch(group_queries: dict[str, list[str]], days: int, limit: int,
                 for raw in items:
                     row = normalize(raw, group, check_date)
                     if row:
+                        date_part = row.get("modified", "")[:10]
+                        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_part):
+                            if date_part < since[:10]:
+                                continue
                         all_rows.append(row)
                 if len(items) < limit or offset + len(items) >= total:
                     break
