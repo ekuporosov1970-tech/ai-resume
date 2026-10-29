@@ -34,6 +34,15 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(len(unique([v,v])), 1)
     def test_formula_safe(self):
         self.assertEqual(clean("=WEBSERVICE(123)"),"'=WEBSERVICE(123)")
+    def test_zero_upper_salary(self):
+        self.assertEqual(salary_text({"salary_min": 50000, "salary_max": 0}), "от 50000 ₽")
+    def test_irrelevant_title_rejected(self):
+        item = self.fixture()
+        item["vacancy"]["job-name"] = "маркетолог"
+        self.assertIsNone(normalize(item,"Копирайтер","29.10.2026"))
+    def test_wrong_remote_negation(self):
+        item = self.fixture("Удаленная работа не предусмотрена")
+        self.assertEqual(remote_status(item["vacancy"]), "Противоречие / офис")
     def test_null_safe(self):
         self.assertEqual(salary_text({}),"Не указана")
 
