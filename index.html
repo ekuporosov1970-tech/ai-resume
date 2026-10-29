@@ -68,6 +68,18 @@ a{color:var(--accent); text-underline-offset:2px}
 @media(max-width:720px){.top-download{font-size:11px;line-height:1.2;padding:7px 8px;text-align:center}}
 @media(max-width:380px){.resume-hero{grid-template-columns:1fr}.resume-hero-text .hero-title{font-size:20px}}
 @media(max-width:720px){.back-to-top-wrap{right:15px;bottom:18px}.back-to-top{width:44px;height:44px;font-size:23px}}
+/* Увеличенный портрет только в экранной версии резюме; PDF не меняем. */
+@media screen and (min-width:721px){
+  .resume-hero{grid-template-columns:minmax(0,28%) minmax(0,1fr);gap:26px}
+  .photo{display:block;width:100%;height:auto;aspect-ratio:1 / 1;object-fit:contain}
+}
+@media screen and (min-width:381px) and (max-width:720px){
+  .resume-hero{grid-template-columns:124px minmax(0,1fr);gap:17px}
+  .photo{display:block;width:124px;height:124px;object-fit:contain}
+}
+@media screen and (max-width:380px){
+  .photo{display:block;width:160px;height:160px;object-fit:contain}
+}
 @media print{.back-to-top-wrap{display:none!important}body{background:white}.shell{display:block;padding:0}.sidebar,.topbar{display:none!important}.resume-paper{border:0;box-shadow:none;padding:0;max-width:100%}.resume-section{break-inside:auto}.job{break-inside:avoid}.resume-hero{break-inside:avoid}a{color:#202c3a}.resume-paper{font-size:11pt}}
 </style>
 </head>
