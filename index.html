@@ -85,11 +85,11 @@ a{color:var(--accent); text-underline-offset:2px}
 <a href="#Driving" class="nav-main" data-section="Driving">Опыт вождения</a>
 <a href="#Additional" class="nav-main" data-section="Additional">Дополнительная информация</a>
 <a href="#AboutMe" class="nav-sub" data-section="AboutMe">Обо мне</a></nav>
-<a class="side-download" href="resume.pdf" download="Купоросов Евгений Павлович — резюме.pdf">↓ Скачать резюме в PDF</a>
+<a class="side-download" href="#" data-download-resume download="Купоросов Евгений Павлович — резюме.pdf">↓ Скачать резюме в PDF</a>
 <div class="side-meta">Резюме обновлено 29 октября 2026 в 10:52</div>
 </aside>
 <main class="main-content">
-<div class="topbar"><div class="topbar-title">Резюме <small>· Купоросов Евгений Павлович</small></div><div style="display:flex; gap:8px"><a class="top-download" href="resume.pdf" download="Купоросов Евгений Павлович — резюме.pdf">↓ Скачать резюме в PDF</a><button id="menuToggle" class="mobile-toggle" type="button" aria-expanded="false" aria-controls="sidebar">☰ Разделы</button></div></div>
+<div class="topbar"><div class="topbar-title">Резюме <small>· Купоросов Евгений Павлович</small></div><div style="display:flex; gap:8px"><a class="top-download" href="#" data-download-resume download="Купоросов Евгений Павлович — резюме.pdf">↓ Скачать резюме в PDF</a><button id="menuToggle" class="mobile-toggle" type="button" aria-expanded="false" aria-controls="sidebar">☰ Разделы</button></div></div>
 <div class="resume-paper"><header class="resume-hero" id="start"><img class="photo" src="photo.jpg" alt="Фотография" loading="eager"/><div class="resume-hero-text"><p class="hero-title">
 <b>Купоросов
 			Евгений Павлович</b></p>
@@ -513,7 +513,8 @@ a{color:var(--accent); text-underline-offset:2px}
 			  <span>Умение планировать</span> 
 			  <span>Расстановка приоритетов</span> 
 			  <span>Аналитическое мышление</span> 
-			  <span>MS Excel</span></p></div>
+			  <span>Microsoft Office</span> 
+			  <span>Вайб-кодинг</span></p></div>
 </section>
 <section class="resume-section" id="Driving"><h2>Опыт вождения</h2>
 <div class="simple-text"><p>
@@ -626,7 +627,7 @@ a{color:var(--accent); text-underline-offset:2px}
    pdf.setModificationDate(new Date());
    return await pdf.save();
  }
- document.querySelectorAll('a[href="resume.pdf"]').forEach(link=>link.addEventListener('click',async ev=>{
+ document.querySelectorAll('a[data-download-resume]').forEach(link=>link.addEventListener('click',async ev=>{
    ev.preventDefault();
    if(link.dataset.loading)return;
    link.dataset.loading='1';
@@ -641,9 +642,7 @@ a{color:var(--accent); text-underline-offset:2px}
       setTimeout(()=>URL.revokeObjectURL(url),10000);
    }catch(error){
       console.error('Не удалось сформировать актуальный PDF',error);
-      const fallback=document.createElement('a');
-      fallback.href='resume.pdf';fallback.download='Купоросов Евгений Павлович — резюме.pdf';
-      document.body.appendChild(fallback);fallback.click();fallback.remove();
+      alert('Не удалось сформировать PDF. Обновите страницу и попробуйте снова.');
    }finally{
       link.textContent=old;delete link.dataset.loading;
    }
