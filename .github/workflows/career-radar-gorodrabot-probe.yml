@@ -1,0 +1,30 @@
+name: Career Radar - Gorodrabot public access probe
+
+on:
+  push:
+    branches:
+      - career-radar/gorodrabot-access-probe-20261031
+    paths:
+      - '.github/workflows/career-radar-gorodrabot-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public_search_probe:
+    name: Public search read-only test
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe public search page (no login, no writes to Career Radar)
+        run: python3 career-radar/gorodrabot/probe.py
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gorodrabot-access-probe
+          path: gorodrabot-probe-report.json
+          if-no-files-found: warn
+          retention-days: 7
