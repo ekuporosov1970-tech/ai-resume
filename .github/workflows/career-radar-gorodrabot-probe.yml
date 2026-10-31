@@ -15,16 +15,24 @@ jobs:
   public_search_probe:
     name: Public search read-only test
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Probe public search page (no login, no writes to Career Radar)
+      - name: Probe with plain HTTP (no login)
         run: python3 career-radar/gorodrabot/probe.py
-      - name: Upload result
+      - name: Install browser tooling
+        run: |
+          python3 -m pip install playwright
+          python3 -m playwright install --with-deps chromium
+      - name: Probe with Chromium (no login)
+        run: python3 career-radar/gorodrabot/probe_browser.py
+      - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: gorodrabot-access-probe
-          path: gorodrabot-probe-report.json
+          path: |
+            gorodrabot-probe-report.json
+            gorodrabot-browser-report.json
           if-no-files-found: warn
           retention-days: 7
